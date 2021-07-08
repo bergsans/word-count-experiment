@@ -1,10 +1,15 @@
 #!/bin/node
 const loremIpsum = require("./lorem-ipsum.js");
 
-const countWord = (words, word) =>
-  word.toLowerCase() in words
-    ? { ...words, [word.toLowerCase()]: words[word.toLowerCase()] + 1 }
-    : { ...words, [word.toLowerCase()]: 1 };
+const countWord = (words, word) => {
+  const lowerCaseWord = word.toLowerCase();
+  if (lowerCaseWord in words) {
+    words[lowerCaseWord] = words[lowerCaseWord] + 1;
+  } else {
+    words[lowerCaseWord] = 1;
+  }
+  return words;
+};
 
 const countWords = (string) =>
   string
