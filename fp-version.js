@@ -11,36 +11,38 @@ const countWord = (words, word) => {
   return words;
 };
 
+const isNotEmpty = (word) => word !== "";
+
 const countWords = (string) =>
   string
     .split(/[ ,;!?.'"\t\n]+/)
-    .filter((word) => word !== "")
+    .filter(isNotEmpty)
     .reduce(countWord, {});
 
-const compareWordLength = ([_, v1], [__, v2]) => v1 < v2;
+const compareWordLength = ([_, v1], [__, v2]) => v2 - v1;
 
 const sortWordList = (wordList) =>
   Object.entries(wordList).sort(compareWordLength);
 
-const getNMostCommonWords = (n) => (listOfWords) =>
-  listOfWords.slice(0, n).map(([word, _frequency]) => word);
-
 const head = (ws) => ws[0];
 
-function surroundWordWith(word, before, after, str) {
+const getNWords = (n) => (li) => li.slice(0, n).map(head);
+
+const surroundWord = (before, after) => (word) => `${before}${word}${after}`;
+
+const surroundWordInText = (before, after, str) => (word) => {
   const wordRegEx = new RegExp(word, "gi");
-  return str.replace(wordRegEx, (w) => `${before}${w}${after}`);
-}
+  return str.replace(wordRegEx, surroundWord(before, after));
+};
 
 const compose = (...fns) => (initial) =>
   fns.reduceRight((a, b) => b(a), initial);
 
-const mostCommonWord = compose(
+const result = compose(
+  surroundWordInText("foo", "bar", loremIpsum),
   head,
-  getNMostCommonWords(1),
+  getNWords(1),
   sortWordList,
   countWords
 )(loremIpsum);
-
-const result = surroundWordWith(mostCommonWord, "foo", "bar", loremIpsum);
 console.log(result);
